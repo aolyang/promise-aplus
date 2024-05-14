@@ -7,8 +7,7 @@
         "typescript": "^5.4.5"
     },
     "scripts": {
-        "test": "node run.cjs",
         "build": "tsc promise-aplus.ts --module commonjs",
-        "run": "npm run build && npm run test"
+        "test": "npm run build && node ./run.cjs"
     }
 }

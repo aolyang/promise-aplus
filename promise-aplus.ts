@@ -21,10 +21,6 @@ const enum PromiseState{
     REJECTED    = 2,
 }
 
-type PromiseAPlusResolve<T> = (value: T | PromiseLike<T>) => void
-type PromiseAPlusReject = (reason?: any) => void
-type PromiseAPlusExecutor<T> = (resolve: PromiseAPlusResolve<T>, reject: PromiseAPlusReject) => void
-
 class PromiseAPlus<T = any> {
     static isValidState(val: any): val is PromiseState {
         return val === PromiseState.PENDING
@@ -45,9 +41,25 @@ class PromiseAPlus<T = any> {
         reject: null
     }
 
-    constructor(fn?: PromiseAPlusExecutor<T>) {
-        if (Utils.isFunction(fn)) {
-            fn(
+    /**
+     * ```js
+     * new PromiseAPlus<FetchResult>((resolve, reject) => {
+     *      if (result) {
+     *          resolve(result)
+     *      } else if (error) {
+     *          reject(error)
+     *      }
+     * })
+     * ```
+     * */
+    constructor(
+        executor?: (
+            resolve: (value: T | PromiseLike<T>) => void,
+            reject: (reason?: any) => void
+        ) => void
+    ) {
+        if (Utils.isFunction(executor)) {
+            executor(
                 (value: T) => PromiseAPlus.Resolve(this, value),
                 (reason: any) => this.reject(reason)
             )
